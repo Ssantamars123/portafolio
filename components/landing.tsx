@@ -1,6 +1,6 @@
 "use client";
 
-import type { MouseEvent, ReactNode } from "react";
+import { useMemo, type MouseEvent, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowUpRight,
@@ -31,8 +31,7 @@ const PROFILE = {
   email: "ssantamars@eafit.edu.co",
   github: "https://github.com/REPLACE_ME",
   linkedin: "https://www.linkedin.com/in/REPLACE_ME",
-  // Si quieres botón de CV: mete tu PDF en /public y pon el path aquí (ej: "/SamuelSantamaria-Resume.pdf")
-  resumeHref: "",
+  resumeHref: "", // "/SamuelSantamaria-Resume.pdf" si pones el pdf en /public
 };
 
 const projects = [
@@ -40,8 +39,8 @@ const projects = [
     title: "NexClass — Full-Stack Django Web App",
     desc: "Marketplace educativo: i18n, blog para profesores (role-based), theme switcher, reviews + ranking.",
     tags: ["Django", "Python", "JavaScript", "i18n"],
-    href: "#", // demo (Vercel / Render) cuando lo tengas
-    github: "#", // repo
+    href: "#",
+    github: "#",
     impact: ["i18n in-app", "Teacher blog (RBAC)", "Reviews + leaderboard"],
   },
   {
@@ -115,10 +114,10 @@ const tech = [
 function SpotlightCard({ children }: { children: ReactNode }) {
   return (
     <div className="group relative rounded-2xl p-[1px]">
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-fuchsia-500/35 via-cyan-400/30 to-emerald-400/30 opacity-0 blur-sm transition-opacity duration-300 group-hover:opacity-100" />
-      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur">
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-fuchsia-500/45 via-cyan-400/40 to-emerald-400/40 opacity-0 blur-sm transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="relative overflow-hidden rounded-2xl border border-white/15 bg-white/8 backdrop-blur">
         <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <div className="absolute -inset-24 bg-[radial-gradient(circle_at_var(--x)_var(--y),rgba(255,255,255,0.18),transparent_35%)]" />
+          <div className="absolute -inset-24 bg-[radial-gradient(circle_at_var(--x)_var(--y),rgba(255,255,255,0.22),transparent_38%)]" />
         </div>
         <div className="relative">{children}</div>
       </div>
@@ -126,37 +125,137 @@ function SpotlightCard({ children }: { children: ReactNode }) {
   );
 }
 
-function GlowBg() {
+function DynamicBg() {
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 22 }, (_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: 1 + Math.random() * 2.5,
+        dur: 6 + Math.random() * 10,
+        delay: Math.random() * 3,
+        opacity: 0.15 + Math.random() * 0.35,
+      })),
+    []
+  );
+
+  const meteors = useMemo(
+    () =>
+      Array.from({ length: 6 }, (_, i) => ({
+        id: i,
+        x: 10 + Math.random() * 80,
+        y: Math.random() * 55,
+        dur: 2.6 + Math.random() * 2.8,
+        delay: Math.random() * 2.5,
+      })),
+    []
+  );
+
   return (
     <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+      {/* Base mood */}
+      <div className="absolute inset-0 bg-[#0B1020]" />
+
+      {/* Overlay “color wash” */}
+      <div className="absolute inset-0 opacity-100 [background:radial-gradient(circle_at_15%_20%,rgba(56,189,248,0.22),transparent_45%),radial-gradient(circle_at_85%_25%,rgba(168,85,247,0.18),transparent_50%),radial-gradient(circle_at_50%_90%,rgba(244,63,94,0.14),transparent_55%)]" />
+
+      {/* Cursor glow (sigue el mouse) */}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at var(--mx) var(--my), rgba(255,255,255,0.16), transparent 40%)",
+        }}
+      />
+
+      {/* Big animated blobs */}
       <motion.div
-        className="absolute left-[-18%] top-[-25%] h-[520px] w-[520px] rounded-full blur-3xl opacity-45
-                   bg-gradient-to-tr from-fuchsia-500/70 via-indigo-500/65 to-cyan-400/65"
-        animate={{ x: [0, 50, 0], y: [0, 35, 0], scale: [1, 1.08, 1] }}
+        className="absolute left-[-14%] top-[-20%] h-[560px] w-[560px] rounded-full blur-3xl opacity-80 mix-blend-screen
+                   bg-gradient-to-tr from-cyan-400/90 via-indigo-500/85 to-fuchsia-500/80"
+        animate={{ x: [0, 70, 0], y: [0, 40, 0], scale: [1, 1.08, 1] }}
         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
-        className="absolute right-[-18%] bottom-[-25%] h-[560px] w-[560px] rounded-full blur-3xl opacity-45
-                   bg-gradient-to-tr from-emerald-400/55 via-sky-400/60 to-violet-500/60"
-        animate={{ x: [0, -55, 0], y: [0, -30, 0], scale: [1, 1.06, 1] }}
+        className="absolute right-[-14%] bottom-[-22%] h-[620px] w-[620px] rounded-full blur-3xl opacity-80 mix-blend-screen
+                   bg-gradient-to-tr from-emerald-400/80 via-sky-400/85 to-violet-500/80"
+        animate={{ x: [0, -80, 0], y: [0, -50, 0], scale: [1, 1.06, 1] }}
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
       />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.10),transparent_55%)]" />
+      <motion.div
+        className="absolute left-[18%] top-[32%] h-[460px] w-[460px] rounded-full blur-3xl opacity-60 mix-blend-screen
+                   bg-gradient-to-tr from-pink-400/70 via-purple-400/65 to-cyan-300/60"
+        animate={{ x: [0, 35, 0], y: [0, -25, 0], scale: [1, 1.04, 1] }}
+        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      {/* Floating particles */}
+      {particles.map((p) => (
+        <motion.span
+          key={p.id}
+          className="absolute rounded-full bg-white"
+          style={{
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            opacity: p.opacity,
+          }}
+          animate={{
+            y: [0, -18, 0],
+            opacity: [p.opacity, p.opacity + 0.35, p.opacity],
+          }}
+          transition={{
+            duration: p.dur,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: p.delay,
+          }}
+        />
+      ))}
+
+      {/* Meteors / shooting stars */}
+      {meteors.map((m) => (
+        <motion.span
+          key={m.id}
+          className="absolute h-px w-44 rotate-[-20deg] bg-gradient-to-r from-transparent via-white/55 to-transparent"
+          style={{ left: `${m.x}%`, top: `${m.y}%` }}
+          animate={{ x: [0, -900], y: [0, 520], opacity: [0, 1, 0] }}
+          transition={{
+            duration: m.dur,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: m.delay,
+            repeatDelay: 2.2,
+          }}
+        />
+      ))}
+
+      {/* Top spotlight */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.16),transparent_55%)]" />
+
+      {/* Grid */}
       <div
-        className="absolute inset-0 opacity-[0.18]"
+        className="absolute inset-0 opacity-[0.14]"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px)",
+            "linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)",
           backgroundSize: "72px 72px",
         }}
       />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(0,0,0,0.75))]" />
     </div>
   );
 }
 
 export default function Landing() {
   const onMove = (e: MouseEvent<HTMLDivElement>) => {
+    // 1) Vars para el cursor glow del fondo
+    const host = e.currentTarget as HTMLElement;
+    const hostRect = host.getBoundingClientRect();
+    host.style.setProperty("--mx", `${e.clientX - hostRect.left}px`);
+    host.style.setProperty("--my", `${e.clientY - hostRect.top}px`);
+
+    // 2) Spotlight de cards
     const target = e.target as HTMLElement;
     const card = target.closest(".group") as HTMLElement | null;
     if (!card) return;
@@ -167,13 +266,23 @@ export default function Landing() {
   };
 
   return (
-    <div className="relative min-h-screen bg-neutral-950 text-neutral-50">
-      <GlowBg />
+    <div
+      className="relative min-h-screen text-neutral-50"
+      onMouseMove={onMove}
+      style={
+        {
+          // defaults para que el glow no “se pierda” al cargar
+          ["--mx" as any]: "50%",
+          ["--my" as any]: "20%",
+        } as React.CSSProperties
+      }
+    >
+      <DynamicBg />
 
-      <header className="sticky top-0 z-30 border-b border-white/10 bg-neutral-950/45 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-white/10 bg-[#0B1020]/55 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
           <div className="flex items-center gap-2 font-semibold tracking-tight">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-white/15 bg-white/8">
               <Sparkles className="h-4 w-4" />
             </span>
             <span>{PROFILE.brand}</span>
@@ -200,18 +309,21 @@ export default function Landing() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-5" onMouseMove={onMove}>
+      <main className="mx-auto max-w-6xl px-5">
         {/* HERO */}
         <section className="py-16 md:py-24">
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55 }}
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-neutral-200"
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/8 px-3 py-1 text-xs text-neutral-200"
           >
             <span className="h-2 w-2 rounded-full bg-emerald-400" />
             {PROFILE.location}
-            <Badge className="bg-white/10 text-neutral-100 hover:bg-white/15" variant="secondary">
+            <Badge
+              className="bg-white/10 text-neutral-100 hover:bg-white/15"
+              variant="secondary"
+            >
               {PROFILE.title}
             </Badge>
           </motion.div>
@@ -223,7 +335,7 @@ export default function Landing() {
             className="mt-6 text-4xl font-semibold tracking-tight md:text-6xl"
           >
             {PROFILE.name} —{" "}
-            <span className="bg-gradient-to-r from-fuchsia-400 via-indigo-300 to-cyan-300 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-fuchsia-300 via-indigo-200 to-cyan-200 bg-clip-text text-transparent">
               construyo productos
             </span>{" "}
             con UI premium y performance.
@@ -235,8 +347,9 @@ export default function Landing() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="mt-5 max-w-2xl text-base text-neutral-200 md:text-lg"
           >
-            Experiencia automatizando procesos (CRM/ERP) y trabajando con datos en tiempo real.
-            Stack: Next.js/React/Angular, Node/Django, SQL/MongoDB, Docker.
+            Experiencia automatizando procesos (CRM/ERP) y trabajando con datos en
+            tiempo real. Stack: Next.js/React/Angular, Node/Django, SQL/MongoDB,
+            Docker.
           </motion.p>
 
           <motion.div
@@ -251,14 +364,27 @@ export default function Landing() {
               </a>
             </Button>
 
-            <Button asChild variant="secondary" className="rounded-2xl bg-white/10 text-white hover:bg-white/15">
-              <a href={PROFILE.github} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2">
+            <Button
+              asChild
+              variant="secondary"
+              className="rounded-2xl bg-white/10 text-white hover:bg-white/15"
+            >
+              <a
+                href={PROFILE.github}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2"
+              >
                 <Github className="h-4 w-4" /> GitHub
               </a>
             </Button>
 
             {PROFILE.resumeHref ? (
-              <Button asChild variant="secondary" className="rounded-2xl bg-white/10 text-white hover:bg-white/15">
+              <Button
+                asChild
+                variant="secondary"
+                className="rounded-2xl bg-white/10 text-white hover:bg-white/15"
+              >
                 <a href={PROFILE.resumeHref} target="_blank" rel="noreferrer">
                   Ver CV
                 </a>
@@ -267,7 +393,7 @@ export default function Landing() {
           </motion.div>
 
           {/* TECH MARQUEE */}
-          <div className="mt-10 overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur">
+          <div className="mt-10 overflow-hidden rounded-2xl border border-white/15 bg-white/8 backdrop-blur">
             <div className="flex gap-4 py-3 [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
               <motion.div
                 className="flex shrink-0 items-center gap-3"
@@ -277,7 +403,7 @@ export default function Landing() {
                 {[...tech, ...tech].map((t, i) => (
                   <span
                     key={`${t}-${i}`}
-                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-neutral-200"
+                    className="rounded-full border border-white/15 bg-white/8 px-3 py-1 text-xs text-neutral-200"
                   >
                     {t}
                   </span>
@@ -289,8 +415,16 @@ export default function Landing() {
           {/* STATS */}
           <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-3">
             {[
-              { k: "Impacto", v: "1,500+ registros migrados • 5 procesos automatizados", icon: Trophy },
-              { k: "Proyecto", v: "NexClass: i18n + blog + reviews/ranking", icon: Sparkles },
+              {
+                k: "Impacto",
+                v: "1,500+ registros migrados • 5 procesos automatizados",
+                icon: Trophy,
+              },
+              {
+                k: "Proyecto",
+                v: "NexClass: i18n + blog + reviews/ranking",
+                icon: Sparkles,
+              },
               { k: "Focus", v: "UI, performance y buenas prácticas", icon: Trophy },
             ].map((x) => (
               <SpotlightCard key={x.k}>
@@ -300,7 +434,9 @@ export default function Landing() {
                       <x.icon className="h-4 w-4 text-neutral-200" />
                       <CardTitle className="text-base">{x.k}</CardTitle>
                     </div>
-                    <CardDescription className="text-neutral-200">{x.v}</CardDescription>
+                    <CardDescription className="text-neutral-200">
+                      {x.v}
+                    </CardDescription>
                   </CardHeader>
                 </Card>
               </SpotlightCard>
@@ -314,10 +450,17 @@ export default function Landing() {
         <section id="projects" className="py-14">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">Proyectos</h2>
-              <p className="mt-2 text-neutral-200">Seleccionados para mostrar impacto y stack real.</p>
+              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+                Proyectos
+              </h2>
+              <p className="mt-2 text-neutral-200">
+                Seleccionados para mostrar impacto y stack real.
+              </p>
             </div>
-            <Badge className="hidden bg-white/10 text-neutral-100 md:inline-flex" variant="secondary">
+            <Badge
+              className="hidden bg-white/10 text-neutral-100 md:inline-flex"
+              variant="secondary"
+            >
               Featured
             </Badge>
           </div>
@@ -336,7 +479,9 @@ export default function Landing() {
                   <Card className="h-full border-0 bg-transparent">
                     <CardHeader>
                       <CardTitle className="text-base">{p.title}</CardTitle>
-                      <CardDescription className="text-neutral-200">{p.desc}</CardDescription>
+                      <CardDescription className="text-neutral-200">
+                        {p.desc}
+                      </CardDescription>
                     </CardHeader>
                     <CardContent className="flex h-full flex-col gap-4">
                       <div className="flex flex-wrap gap-2">
@@ -367,13 +512,19 @@ export default function Landing() {
                           className="bg-white/10 text-white hover:bg-white/15"
                           asChild
                         >
-                          <a href={p.github} className="inline-flex items-center gap-2">
+                          <a
+                            href={p.github}
+                            className="inline-flex items-center gap-2"
+                          >
                             <Github className="h-4 w-4" /> GitHub
                           </a>
                         </Button>
 
                         <Button size="sm" className="rounded-xl" asChild>
-                          <a href={p.href} className="inline-flex items-center gap-2">
+                          <a
+                            href={p.href}
+                            className="inline-flex items-center gap-2"
+                          >
                             Demo <ArrowUpRight className="h-4 w-4" />
                           </a>
                         </Button>
@@ -392,8 +543,12 @@ export default function Landing() {
         <section id="experience" className="py-14">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">Experiencia</h2>
-              <p className="mt-2 text-neutral-200">Trabajo real: automatización + data en tiempo real.</p>
+              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+                Experiencia
+              </h2>
+              <p className="mt-2 text-neutral-200">
+                Trabajo real: automatización + data en tiempo real.
+              </p>
             </div>
           </div>
 
@@ -432,10 +587,12 @@ export default function Landing() {
         <section id="about" className="py-14">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <div className="md:col-span-1">
-              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">Sobre mí</h2>
+              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+                Sobre mí
+              </h2>
               <p className="mt-3 text-neutral-200">
-                Me gusta construir productos end-to-end: UI sólida, backend limpio, bases de datos bien modeladas
-                y despliegue ordenado.
+                Me gusta construir productos end-to-end: UI sólida, backend limpio,
+                bases de datos bien modeladas y despliegue ordenado.
               </p>
             </div>
 
@@ -473,24 +630,49 @@ export default function Landing() {
 
         {/* CONTACT */}
         <section id="contact" className="py-14">
-          <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">Contacto</h2>
-          <p className="mt-3 text-neutral-200">Email + LinkedIn + GitHub, y listo para aplicar.</p>
+          <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+            Contacto
+          </h2>
+          <p className="mt-3 text-neutral-200">
+            Email + LinkedIn + GitHub, y listo para aplicar.
+          </p>
 
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Button className="rounded-2xl" asChild>
-              <a href={`mailto:${PROFILE.email}`} className="inline-flex items-center gap-2">
+              <a
+                href={`mailto:${PROFILE.email}`}
+                className="inline-flex items-center gap-2"
+              >
                 <Mail className="h-4 w-4" /> {PROFILE.email}
               </a>
             </Button>
 
-            <Button variant="secondary" className="rounded-2xl bg-white/10 text-white hover:bg-white/15" asChild>
-              <a href={PROFILE.linkedin} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2">
+            <Button
+              variant="secondary"
+              className="rounded-2xl bg-white/10 text-white hover:bg-white/15"
+              asChild
+            >
+              <a
+                href={PROFILE.linkedin}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2"
+              >
                 <Linkedin className="h-4 w-4" /> LinkedIn
               </a>
             </Button>
 
-            <Button variant="secondary" className="rounded-2xl bg-white/10 text-white hover:bg-white/15" asChild>
-              <a href={PROFILE.github} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2">
+            <Button
+              variant="secondary"
+              className="rounded-2xl bg-white/10 text-white hover:bg-white/15"
+              asChild
+            >
+              <a
+                href={PROFILE.github}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2"
+              >
                 <Github className="h-4 w-4" /> GitHub
               </a>
             </Button>
