@@ -45,8 +45,8 @@ const PROFILE = {
   title: "Full-Stack Developer • CS @ EAFIT",
   location: "Medellín, Colombia",
   email: "ssantamars@eafit.edu.co",
-  github: "https://github.com/REPLACE_ME",
-  linkedin: "https://www.linkedin.com/in/REPLACE_ME",
+  github: "https://github.com/Ssantamars123",
+  linkedin: "https://www.linkedin.com/in/samuel-santamaria-044a0a290/?isSelfProfile=true",
   // ✅ tu archivo ya está en: public/projects/SamuelSantamaria-Resume-Updated-v2.pdf
   resumeHref: "/projects/SamuelSantamaria-Resume-Updated-v2.pdf",
 };
