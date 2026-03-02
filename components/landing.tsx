@@ -1,27 +1,29 @@
 "use client";
 
+import Image from "next/image";
 import {
+  type CSSProperties,
+  type MouseEvent as ReactMouseEvent,
+  type ReactNode,
   useEffect,
   useMemo,
   useRef,
   useState,
-  type CSSProperties,
-  type MouseEvent,
-  type ReactNode,
 } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 import {
   ArrowUpRight,
+  Briefcase,
+  Command,
+  Copy,
   Github,
+  GraduationCap,
   Linkedin,
   Mail,
   Sparkles,
-  GraduationCap,
-  Briefcase,
   Trophy,
-  Command,
-  Copy,
 } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,6 +35,10 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
+/* ----------------------------- DATA / CONSTANTS ---------------------------- */
+
+const NEXCLASS_REPO = "https://github.com/jpjimenezq/NexClass";
+
 const PROFILE = {
   name: "Samuel Santamaria",
   brand: "SamuelSantamaria.dev",
@@ -41,23 +47,39 @@ const PROFILE = {
   email: "ssantamars@eafit.edu.co",
   github: "https://github.com/REPLACE_ME",
   linkedin: "https://www.linkedin.com/in/REPLACE_ME",
-  resumeHref: "", // "/SamuelSantamaria-Resume.pdf" si pones el pdf en /public
+  // ✅ tu archivo ya está en: public/projects/SamuelSantamaria-Resume-Updated-v2.pdf
+  resumeHref: "/projects/SamuelSantamaria-Resume-Updated-v2.pdf",
 };
 
-const projects = [
+type Project = {
+  title: string;
+  desc: string;
+  tags: string[];
+  href?: string; // demo
+  github: string;
+  impact: string[];
+  logo?: string;
+};
+
+const projects: Project[] = [
   {
     title: "NexClass — Full-Stack Django Web App",
-    desc: "Marketplace educativo: i18n, blog para profesores (role-based), theme switcher, reviews + ranking.",
-    tags: ["Django", "Python", "JavaScript", "i18n"],
-    href: "#",
-    github: "#",
-    impact: ["i18n in-app", "Teacher blog (RBAC)", "Reviews + leaderboard"],
+    desc: "Plataforma educativa tipo marketplace: usuarios/roles, búsqueda, favoritos, mensajería, blog de profesores y sistema de reviews/ranking (arquitectura multi-app).",
+    tags: ["Django", "Python", "HTML/CSS", "JavaScript"],
+    href: "", // no demo por ahora
+    github: NEXCLASS_REPO,
+    logo: "/projects/nexclass.png",
+    impact: [
+      "Arquitectura modular multi-app (users, search, favorites, reviews, teacher_blog)",
+      "Features: búsqueda + favoritos + mensajería interna + inscripciones",
+      "Sistema de reviews/ranking + extensible",
+    ],
   },
   {
     title: "Zoho CRM ↔ Siigo ERP Sync (Python + APIs)",
     desc: "Integración y automatización: sincronización de datos clave y flujos de outreach basados en triggers.",
     tags: ["Python", "APIs", "Automation"],
-    href: "#",
+    href: "",
     github: "#",
     impact: ["1,500+ registros", "5 procesos automatizados", "Workflows de emails"],
   },
@@ -65,31 +87,28 @@ const projects = [
     title: "Portfolio (Next.js) — UI Premium",
     desc: "Este sitio: glass + neon, motion, componentes reutilizables, performance y SEO.",
     tags: ["Next.js", "TypeScript", "Tailwind", "shadcn/ui"],
-    href: "#",
+    href: "",
     github: "#",
     impact: ["UI system", "Motion", "Rápido + SEO"],
   },
 ];
 
-const FEATURED = {
-  title: "NexClass — Full-Stack Django Web App",
-  subtitle: "Mini case study",
-  desc: "Marketplace educativo con i18n, blog para profesores (RBAC), theme switcher y sistema de reviews/ranking. Enfocado en UX, arquitectura limpia y features reales.",
-  tags: ["Django", "Python", "JavaScript", "i18n", "RBAC"],
-  metrics: [
-    { k: "Scope", v: "Auth, perfiles, búsqueda, favoritos, blog" },
-    { k: "Quality", v: "i18n + themes + UI consistente" },
-    { k: "Outcome", v: "Base lista para escalar features" },
-  ],
-  github: "#",
-  demo: "#",
+// Featured project removed per user request. Related data and constants deleted.
+
+type ExperienceItem = {
+  company: string;
+  role: string;
+  date: string;
+  location?: string;
+  bullets: string[];
 };
 
-const experience = [
+const experience: ExperienceItem[] = [
   {
     company: "Dekotendencias S.A.S",
     role: "Summer Intern",
     date: "Feb 2025 – Jul 2025",
+    location: "Medellín, Colombia",
     bullets: [
       "Implementé Zoho CRM para fortalecer gestión de clientes y control comercial.",
       "Integré Zoho CRM con Siigo ERP usando Python + APIs para sincronizar datos clave.",
@@ -102,6 +121,7 @@ const experience = [
     company: "Genius Sports",
     role: "Sports Data Operator",
     date: "May 2025 – Present",
+    location: "Medellín, Colombia",
     bullets: [
       "Capturo y valido tracking y play-by-play en vivo (basketball/football).",
       "Verifico datos de jugadores/equipos para asegurar feeds y reportes confiables.",
@@ -111,11 +131,53 @@ const experience = [
   },
 ];
 
-const education = [
+type EducationItem = {
+  school: string;
+  program: string;
+  location?: string;
+  extra?: string;
+  coursework?: string;
+};
+
+const education: EducationItem[] = [
   {
     school: "EAFIT University",
+    location: "Medellín, Colombia",
     program: "BSc in Computer Science (Expected Jun 2027)",
     extra: "GPA: 4.1/5.0",
+    coursework: "Relevant coursework: C, C++, Java, JavaScript, Python; Unix/Linux environments",
+  },
+  {
+    school: "Academie Ste-Cécile International School",
+    location: "Ontario, Canada",
+    program: "Study Abroad – Intensive English Program (2017)",
+  },
+  {
+    school: "Winston-Salem State University",
+    location: "Medellín, Colombia",
+    program: "Advanced English Language Program (2017–2019)",
+  },
+];
+
+type LeadershipItem = {
+  org: string;
+  role: string;
+  date: string;
+  location?: string;
+  bullets: string[];
+};
+
+const leadership: LeadershipItem[] = [
+  {
+    org: "Aguapanelazos ONG",
+    role: "Volunteer",
+    date: "Dec 2025",
+    location: "Medellín, Colombia",
+    bullets: [
+      "Participé en jornadas de apoyo comunitario entregando alimentos y regalos a familias de bajos recursos.",
+      "Coordiné rutas y logística con voluntarios para cubrir varios barrios de manera eficiente.",
+      "Impulsé conciencia social mediante interacción directa con comunidades vulnerables.",
+    ],
   },
 ];
 
@@ -134,6 +196,16 @@ const tech = [
   "Docker",
   "Git/GitHub",
 ];
+
+const skills = {
+  languages: ["Python", "JavaScript", "SQL"],
+  frontend: ["Angular (v21)", "React", "HTML", "CSS"],
+  backend: ["Django", "Node.js"],
+  databases: ["MongoDB"],
+  tools: ["Git/GitHub", "Linux", "Docker"],
+  spoken: ["Spanish (native)", "English (B2 CEFR)"],
+  interests: ["Gaming", "Motocross", "Soccer", "Gym", "Swimming"],
+} as const;
 
 type Action =
   | {
@@ -161,6 +233,8 @@ type Action =
       icon?: ReactNode;
     };
 
+/* --------------------------------- HELPERS -------------------------------- */
+
 /** Deterministic PRNG (evita hydration mismatch) */
 function mulberry32(seed: number) {
   return function () {
@@ -170,10 +244,13 @@ function mulberry32(seed: number) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
+
 function round(n: number, d = 4) {
   const k = 10 ** d;
   return Math.round(n * k) / k;
 }
+
+/* ------------------------------- UI COMPONENTS ------------------------------ */
 
 function SpotlightCard({ children }: { children: ReactNode }) {
   return (
@@ -190,7 +267,6 @@ function SpotlightCard({ children }: { children: ReactNode }) {
 }
 
 function DynamicBg() {
-  // ✅ FIX #2: menos partículas/meteors (misma estética, mucho más liviano)
   const particles = useMemo(() => {
     const rand = mulberry32(1337);
     return Array.from({ length: 12 }, (_, i) => ({
@@ -218,7 +294,6 @@ function DynamicBg() {
   return (
     <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
       <div className="absolute inset-0 bg-[#0B1020]" />
-
       <div className="absolute inset-0 opacity-100 [background:radial-gradient(circle_at_15%_20%,rgba(56,189,248,0.22),transparent_45%),radial-gradient(circle_at_85%_25%,rgba(168,85,247,0.18),transparent_50%),radial-gradient(circle_at_50%_90%,rgba(244,63,94,0.14),transparent_55%)]" />
 
       <div
@@ -230,20 +305,17 @@ function DynamicBg() {
       />
 
       <motion.div
-        className="absolute left-[-14%] top-[-20%] h-[560px] w-[560px] rounded-full blur-3xl opacity-80 mix-blend-screen
-                   bg-gradient-to-tr from-cyan-400/90 via-indigo-500/85 to-fuchsia-500/80"
+        className="absolute left-[-14%] top-[-20%] h-[560px] w-[560px] rounded-full blur-3xl opacity-80 mix-blend-screen bg-gradient-to-tr from-cyan-400/90 via-indigo-500/85 to-fuchsia-500/80"
         animate={{ x: [0, 70, 0], y: [0, 40, 0], scale: [1, 1.08, 1] }}
         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
-        className="absolute right-[-14%] bottom-[-22%] h-[620px] w-[620px] rounded-full blur-3xl opacity-80 mix-blend-screen
-                   bg-gradient-to-tr from-emerald-400/80 via-sky-400/85 to-violet-500/80"
+        className="absolute right-[-14%] bottom-[-22%] h-[620px] w-[620px] rounded-full blur-3xl opacity-80 mix-blend-screen bg-gradient-to-tr from-emerald-400/80 via-sky-400/85 to-violet-500/80"
         animate={{ x: [0, -80, 0], y: [0, -50, 0], scale: [1, 1.06, 1] }}
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
-        className="absolute left-[18%] top-[32%] h-[460px] w-[460px] rounded-full blur-3xl opacity-60 mix-blend-screen
-                   bg-gradient-to-tr from-pink-400/70 via-purple-400/65 to-cyan-300/60"
+        className="absolute left-[18%] top-[32%] h-[460px] w-[460px] rounded-full blur-3xl opacity-60 mix-blend-screen bg-gradient-to-tr from-pink-400/70 via-purple-400/65 to-cyan-300/60"
         animate={{ x: [0, 35, 0], y: [0, -25, 0], scale: [1, 1.04, 1] }}
         transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
       />
@@ -289,7 +361,6 @@ function DynamicBg() {
       ))}
 
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.16),transparent_55%)]" />
-
       <div
         className="absolute inset-0 opacity-[0.14]"
         style={{
@@ -320,6 +391,7 @@ function CommandPaletteModal({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return actions;
+
     return actions.filter((a) => {
       const hay = `${a.title} ${a.subtitle ?? ""}`.toLowerCase();
       return hay.includes(q);
@@ -378,14 +450,9 @@ function CommandPaletteModal({
               ref={inputRef}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar… (Projects, Contact, GitHub, LinkedIn)"
+              placeholder="Buscar… (Projects, Experience, About, Contact, Resume)"
               className="w-full bg-transparent text-sm text-white placeholder:text-neutral-400 outline-none"
             />
-            <div className="hidden sm:flex items-center gap-1 text-xs text-neutral-300">
-              <span className="rounded-md border border-white/15 bg-white/5 px-2 py-1">↑↓</span>
-              <span className="rounded-md border border-white/15 bg-white/5 px-2 py-1">Enter</span>
-              <span className="rounded-md border border-white/15 bg-white/5 px-2 py-1">Esc</span>
-            </div>
           </div>
 
           <div className="max-h-[360px] overflow-auto p-2">
@@ -412,9 +479,13 @@ function CommandPaletteModal({
                         {a.icon ?? <Sparkles className="h-4 w-4" />}
                       </span>
                       <div>
-                        <div className="text-sm font-medium text-white">{a.title}</div>
+                        <div className="text-sm font-medium text-white">
+                          {a.title}
+                        </div>
                         {a.subtitle ? (
-                          <div className="text-xs text-neutral-300">{a.subtitle}</div>
+                          <div className="text-xs text-neutral-300">
+                            {a.subtitle}
+                          </div>
                         ) : null}
                       </div>
                     </div>
@@ -444,10 +515,11 @@ function CommandPaletteModal({
   );
 }
 
+/* --------------------------------- PAGE ----------------------------------- */
+
 export default function Landing() {
   const [paletteOpen, setPaletteOpen] = useState(false);
 
-  // ✅ Scroll progress bar
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 120,
@@ -457,15 +529,84 @@ export default function Landing() {
 
   const actions: Action[] = useMemo(
     () => [
-      { id: "go-featured", title: "Featured Project", subtitle: "Mini case study", kind: "section", href: "#featured", icon: <Trophy className="h-4 w-4" /> },
-      { id: "go-projects", title: "Projects", subtitle: "Sección de proyectos", kind: "section", href: "#projects", icon: <Sparkles className="h-4 w-4" /> },
-      { id: "go-exp", title: "Experience", subtitle: "Trabajo y roles", kind: "section", href: "#experience", icon: <Briefcase className="h-4 w-4" /> },
-      { id: "go-about", title: "About", subtitle: "Educación y skills", kind: "section", href: "#about", icon: <GraduationCap className="h-4 w-4" /> },
-      { id: "go-contact", title: "Contact", subtitle: "Email y links", kind: "section", href: "#contact", icon: <Mail className="h-4 w-4" /> },
-      { id: "open-github", title: "Open GitHub", subtitle: PROFILE.github, kind: "external", href: PROFILE.github, icon: <Github className="h-4 w-4" /> },
-      { id: "open-linkedin", title: "Open LinkedIn", subtitle: PROFILE.linkedin, kind: "external", href: PROFILE.linkedin, icon: <Linkedin className="h-4 w-4" /> },
-      { id: "mail", title: "Send email", subtitle: PROFILE.email, kind: "mailto", icon: <Mail className="h-4 w-4" /> },
-      { id: "copy-email", title: "Copy email", subtitle: PROFILE.email, kind: "copyEmail", icon: <Copy className="h-4 w-4" /> },
+      {
+        id: "go-projects",
+        title: "Projects",
+        subtitle: "Sección de proyectos",
+        kind: "section",
+        href: "#projects",
+        icon: <Sparkles className="h-4 w-4" />,
+      },
+      {
+        id: "go-exp",
+        title: "Experience",
+        subtitle: "Trabajo y roles",
+        kind: "section",
+        href: "#experience",
+        icon: <Briefcase className="h-4 w-4" />,
+      },
+      {
+        id: "go-about",
+        title: "About",
+        subtitle: "Educación, skills, liderazgo",
+        kind: "section",
+        href: "#about",
+        icon: <GraduationCap className="h-4 w-4" />,
+      },
+      {
+        id: "go-contact",
+        title: "Contact",
+        subtitle: "Email y links",
+        kind: "section",
+        href: "#contact",
+        icon: <Mail className="h-4 w-4" />,
+      },
+      {
+        id: "open-resume",
+        title: "Open Resume (PDF)",
+        subtitle: PROFILE.resumeHref,
+        kind: "external",
+        href: PROFILE.resumeHref,
+        icon: <ArrowUpRight className="h-4 w-4" />,
+      },
+      {
+        id: "open-nexclass",
+        title: "Open NexClass repo",
+        subtitle: NEXCLASS_REPO,
+        kind: "external",
+        href: NEXCLASS_REPO,
+        icon: <Github className="h-4 w-4" />,
+      },
+      {
+        id: "open-github",
+        title: "Open GitHub",
+        subtitle: PROFILE.github,
+        kind: "external",
+        href: PROFILE.github,
+        icon: <Github className="h-4 w-4" />,
+      },
+      {
+        id: "open-linkedin",
+        title: "Open LinkedIn",
+        subtitle: PROFILE.linkedin,
+        kind: "external",
+        href: PROFILE.linkedin,
+        icon: <Linkedin className="h-4 w-4" />,
+      },
+      {
+        id: "mail",
+        title: "Send email",
+        subtitle: PROFILE.email,
+        kind: "mailto",
+        icon: <Mail className="h-4 w-4" />,
+      },
+      {
+        id: "copy-email",
+        title: "Copy email",
+        subtitle: PROFILE.email,
+        kind: "copyEmail",
+        icon: <Copy className="h-4 w-4" />,
+      },
     ],
     []
   );
@@ -474,7 +615,11 @@ export default function Landing() {
     try {
       if (a.kind === "section") {
         const el = document.querySelector(a.href);
-        if (el) (el as HTMLElement).scrollIntoView({ behavior: "smooth", block: "start" });
+        if (el)
+          (el as HTMLElement).scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
       } else if (a.kind === "external") {
         window.open(a.href, "_blank", "noopener,noreferrer");
       } else if (a.kind === "mailto") {
@@ -505,10 +650,9 @@ export default function Landing() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // ✅ FIX #1: throttle mousemove with requestAnimationFrame
   const rafRef = useRef<number | null>(null);
 
-  const onMove = (e: MouseEvent<HTMLDivElement>) => {
+  const onMove = (e: ReactMouseEvent<HTMLDivElement>) => {
     if (rafRef.current) return;
 
     const clientX = e.clientX;
@@ -528,6 +672,7 @@ export default function Landing() {
       if (card) {
         const rect = card.getBoundingClientRect();
         card.style.setProperty("--x", `${clientX - rect.left}px`);
+        card.style.setProperty("--y", `${clientX - rect.left}px`);
         card.style.setProperty("--y", `${clientY - rect.top}px`);
       }
 
@@ -552,16 +697,10 @@ export default function Landing() {
     <div
       className="relative min-h-screen text-neutral-50"
       onMouseMove={onMove}
-      style={
-        {
-          ["--mx" as any]: "50%",
-          ["--my" as any]: "20%",
-        } as CSSProperties
-      }
+      style={{ ["--mx" as any]: "50%", ["--my" as any]: "20%" } as CSSProperties}
     >
       <DynamicBg />
 
-      {/* ✅ Scroll progress bar */}
       <div className="fixed left-0 right-0 top-0 z-[80] h-[3px] bg-white/5">
         <motion.div
           className="h-full bg-gradient-to-r from-cyan-300 via-fuchsia-300 to-emerald-300"
@@ -587,10 +726,18 @@ export default function Landing() {
           </div>
 
           <nav className="hidden gap-6 text-sm text-neutral-200 md:flex">
-            <a className="hover:text-white" href="#projects">Proyectos</a>
-            <a className="hover:text-white" href="#experience">Experiencia</a>
-            <a className="hover:text-white" href="#about">Sobre mí</a>
-            <a className="hover:text-white" href="#contact">Contacto</a>
+            <a className="hover:text-white" href="#projects">
+              Proyectos
+            </a>
+            <a className="hover:text-white" href="#experience">
+              Experiencia
+            </a>
+            <a className="hover:text-white" href="#about">
+              Sobre mí
+            </a>
+            <a className="hover:text-white" href="#contact">
+              Contacto
+            </a>
           </nav>
 
           <div className="flex items-center gap-2">
@@ -612,7 +759,6 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* ✅ El resto del layout queda igual que tu versión */}
       <main className="mx-auto max-w-6xl px-5">
         {/* HERO */}
         <section className="py-16 md:py-24">
@@ -624,7 +770,10 @@ export default function Landing() {
           >
             <span className="h-2 w-2 rounded-full bg-emerald-400" />
             {PROFILE.location}
-            <Badge className="bg-white/10 text-neutral-100 hover:bg-white/15" variant="secondary">
+            <Badge
+              className="bg-white/10 text-neutral-100 hover:bg-white/15"
+              variant="secondary"
+            >
               {PROFILE.title}
             </Badge>
           </motion.div>
@@ -648,31 +797,31 @@ export default function Landing() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="mt-5 max-w-2xl text-base text-neutral-200 md:text-lg"
           >
-            Experiencia automatizando procesos (CRM/ERP) y trabajando con datos en tiempo real. Stack:
-            Next.js/React/Angular, Node/Django, SQL/MongoDB, Docker.
+            Full-stack dev enfocado en UI, performance y features reales. Django/Node, React/Next/Angular, SQL/MongoDB,
+            Docker.
           </motion.p>
 
+          {/* ✅ SOLO CV (borrados los 2 botones del NexClass del HERO) */}
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.15 }}
             className="mt-8 flex flex-col gap-3 sm:flex-row"
           >
-            <Button asChild className="rounded-2xl">
-              <a href="#projects" className="inline-flex items-center gap-2">
-                Ver proyectos <ArrowUpRight className="h-4 w-4" />
-              </a>
-            </Button>
-
-            <Button asChild variant="secondary" className="rounded-2xl bg-white/10 text-white hover:bg-white/15">
-              <a href={PROFILE.github} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2">
-                <Github className="h-4 w-4" /> GitHub
-              </a>
-            </Button>
-
             {PROFILE.resumeHref ? (
-              <Button asChild variant="secondary" className="rounded-2xl bg-white/10 text-white hover:bg-white/15">
-                <a href={PROFILE.resumeHref} target="_blank" rel="noreferrer">Ver CV</a>
+              <Button
+                asChild
+                variant="secondary"
+                className="rounded-2xl bg-white/10 text-white hover:bg-white/15"
+              >
+                <a
+                  href={PROFILE.resumeHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2"
+                >
+                  Descargar CV <ArrowUpRight className="h-4 w-4" />
+                </a>
               </Button>
             ) : null}
           </motion.div>
@@ -686,149 +835,431 @@ export default function Landing() {
                 transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
               >
                 {[...tech, ...tech].map((t, i) => (
-                  <span key={`${t}-${i}`} className="rounded-full border border-white/15 bg-white/8 px-3 py-1 text-xs text-neutral-200">
+                  <span
+                    key={`${t}-${i}`}
+                    className="rounded-full border border-white/15 bg-white/8 px-3 py-1 text-xs text-neutral-200"
+                  >
                     {t}
                   </span>
                 ))}
               </motion.div>
             </div>
           </div>
+        </section>
 
-          {/* STATS */}
-          <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-3">
-            {[
-              { k: "Impacto", v: "1,500+ registros migrados • 5 procesos automatizados", icon: Trophy },
-              { k: "Proyecto", v: "NexClass: i18n + blog + reviews/ranking", icon: Sparkles },
-              { k: "Focus", v: "UI, performance y buenas prácticas", icon: Trophy },
-            ].map((x) => (
-              <SpotlightCard key={x.k}>
-                <Card className="border-0 bg-transparent">
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <x.icon className="h-4 w-4 text-neutral-200" />
-                      <CardTitle className="text-base">{x.k}</CardTitle>
-                    </div>
-                    <CardDescription className="text-neutral-200">{x.v}</CardDescription>
-                  </CardHeader>
-                </Card>
-              </SpotlightCard>
+        <Separator className="bg-white/10" />
+
+        <Separator className="bg-white/10" />
+
+        {/* PROJECTS */}
+        <section id="projects" className="py-14">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+                Proyectos
+              </h2>
+              <p className="mt-2 text-neutral-200">
+                Selección corta para mostrar impacto y stack real.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3">
+            {projects.map((p, idx) => (
+              <motion.div
+                key={p.title}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.5, delay: idx * 0.06 }}
+                className="h-full"
+              >
+                <SpotlightCard>
+                  <Card className="h-full border-0 bg-transparent">
+                    <CardHeader>
+                      <CardTitle className="text-base">
+                        <span className="inline-flex items-center gap-3">
+                          {p.logo ? (
+                            <span className="relative h-9 w-9 overflow-hidden rounded-xl border border-white/15 bg-white/8">
+                              <Image
+                                src={p.logo}
+                                alt="Project logo"
+                                fill
+                                className="object-contain p-1"
+                              />
+                            </span>
+                          ) : null}
+                          <span>{p.title}</span>
+                        </span>
+                      </CardTitle>
+                      <CardDescription className="text-neutral-200">
+                        {p.desc}
+                      </CardDescription>
+                    </CardHeader>
+
+                    <CardContent className="flex h-full flex-col gap-4">
+                      <div className="flex flex-wrap gap-2">
+                        {p.tags.map((t) => (
+                          <Badge
+                            key={t}
+                            variant="secondary"
+                            className="bg-white/10 text-neutral-100 hover:bg-white/15"
+                          >
+                            {t}
+                          </Badge>
+                        ))}
+                      </div>
+
+                      <ul className="space-y-1 text-sm text-neutral-200">
+                        {p.impact.map((it) => (
+                          <li key={it} className="flex items-start gap-2">
+                            <span className="mt-[6px] h-1.5 w-1.5 rounded-full bg-white/40" />
+                            <span>{it}</span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <div className="mt-auto flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="bg-white/10 text-white hover:bg-white/15"
+                          asChild
+                        >
+                          <a
+                            href={p.github}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-2"
+                          >
+                            <Github className="h-4 w-4" /> GitHub
+                          </a>
+                        </Button>
+
+                        {p.href ? (
+                          <Button size="sm" className="rounded-xl" asChild>
+                            <a
+                              href={p.href}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-2"
+                            >
+                              Demo <ArrowUpRight className="h-4 w-4" />
+                            </a>
+                          </Button>
+                        ) : null}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </SpotlightCard>
+              </motion.div>
             ))}
           </div>
         </section>
 
-        {/* Mantén el resto EXACTAMENTE como ya lo tenías: Featured / Projects / Experience / About / Contact / Footer */}
-        {/* (No lo duplico aquí para no alargar demasiado; tu archivo ya lo tiene completo debajo) */}
         <Separator className="bg-white/10" />
 
-        {/* FEATURED PROJECT */}
-        <section id="featured" className="py-14">
+        {/* EXPERIENCE */}
+        <section id="experience" className="py-14">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">Featured Project</h2>
-              <p className="mt-2 text-neutral-200">Mini case study con parallax + mockup.</p>
+              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+                Experiencia
+              </h2>
+              <p className="mt-2 text-neutral-200">
+                Roles recientes y resultados medibles.
+              </p>
             </div>
-            <Badge className="hidden bg-white/10 text-neutral-100 md:inline-flex" variant="secondary">
-              {FEATURED.subtitle}
-            </Badge>
           </div>
 
-          <div
-            data-parallax
-            className="mt-8 rounded-3xl border border-white/15 bg-white/8 backdrop-blur overflow-hidden"
-            style={
-              {
-                ["--px" as any]: "0px",
-                ["--py" as any]: "0px",
-              } as CSSProperties
-            }
-          >
-            <div className="grid grid-cols-1 gap-8 p-6 md:grid-cols-2 md:p-10">
-              <div>
-                <div className="flex flex-wrap gap-2">
-                  {FEATURED.tags.map((t) => (
-                    <Badge key={t} variant="secondary" className="bg-white/10 text-neutral-100 hover:bg-white/15">
-                      {t}
-                    </Badge>
-                  ))}
-                </div>
+          <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
+            {experience.map((e, idx) => (
+              <motion.div
+                key={`${e.company}-${e.role}`}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.5, delay: idx * 0.06 }}
+                className="h-full"
+              >
+                <SpotlightCard>
+                  <Card className="h-full border-0 bg-transparent">
+                    <CardHeader>
+                      <CardTitle className="text-base">
+                        <span className="inline-flex w-full items-center justify-between gap-3">
+                          <span>{e.company}</span>
+                          <span className="text-xs text-neutral-300">
+                            {e.date}
+                          </span>
+                        </span>
+                      </CardTitle>
+                      <CardDescription className="text-neutral-200">
+                        {e.role}
+                        {e.location ? ` • ${e.location}` : ""}
+                      </CardDescription>
+                    </CardHeader>
 
-                <h3 className="mt-5 text-2xl font-semibold tracking-tight md:text-3xl">{FEATURED.title}</h3>
-                <p className="mt-3 text-neutral-200">{FEATURED.desc}</p>
-
-                <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                  {FEATURED.metrics.map((m) => (
-                    <div key={m.k} className="rounded-2xl border border-white/15 bg-white/8 p-4">
-                      <div className="text-sm font-medium text-white">{m.k}</div>
-                      <div className="mt-1 text-sm text-neutral-200">{m.v}</div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                  <Button asChild className="rounded-2xl">
-                    <a href={FEATURED.demo} className="inline-flex items-center gap-2">
-                      Ver demo <ArrowUpRight className="h-4 w-4" />
-                    </a>
-                  </Button>
-
-                  <Button asChild variant="secondary" className="rounded-2xl bg-white/10 text-white hover:bg-white/15">
-                    <a href={FEATURED.github} className="inline-flex items-center gap-2">
-                      <Github className="h-4 w-4" /> GitHub
-                    </a>
-                  </Button>
-                </div>
-              </div>
-
-              <div className="relative">
-                <motion.div
-                  className="relative rounded-3xl border border-white/15 bg-black/20 overflow-hidden"
-                  style={{ transform: "translate3d(var(--px), var(--py), 0)" }}
-                  animate={{ y: [0, -6, 0] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <div className="aspect-[16/10] w-full">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(56,189,248,0.35),transparent_40%),radial-gradient(circle_at_80%_20%,rgba(168,85,247,0.30),transparent_45%),radial-gradient(circle_at_55%_90%,rgba(244,63,94,0.22),transparent_55%)]" />
-                    <div
-                      className="absolute inset-0 opacity-[0.12]"
-                      style={{
-                        backgroundImage:
-                          "linear-gradient(rgba(255,255,255,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.10) 1px, transparent 1px)",
-                        backgroundSize: "48px 48px",
-                      }}
-                    />
-                    <div className="absolute left-0 right-0 top-0 flex items-center gap-2 border-b border-white/10 bg-white/5 px-4 py-3">
-                      <span className="h-2.5 w-2.5 rounded-full bg-white/25" />
-                      <span className="h-2.5 w-2.5 rounded-full bg-white/25" />
-                      <span className="h-2.5 w-2.5 rounded-full bg-white/25" />
-                      <div className="ml-3 h-2 w-40 rounded-full bg-white/10" />
-                    </div>
-                    <div className="absolute inset-0 p-6 pt-14">
-                      <div className="h-5 w-2/3 rounded-full bg-white/10" />
-                      <div className="mt-3 h-3 w-1/2 rounded-full bg-white/8" />
-                      <div className="mt-6 grid grid-cols-3 gap-3">
-                        <div className="h-20 rounded-2xl bg-white/8 border border-white/10" />
-                        <div className="h-20 rounded-2xl bg-white/8 border border-white/10" />
-                        <div className="h-20 rounded-2xl bg-white/8 border border-white/10" />
-                      </div>
-                      <div className="mt-4 h-28 rounded-2xl bg-white/8 border border-white/10" />
-                    </div>
-                    <motion.div
-                      className="absolute -inset-24 rotate-12 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-                      animate={{ x: ["-30%", "130%"] }}
-                      transition={{ duration: 2.8, repeat: Infinity, ease: "linear" }}
-                    />
-                  </div>
-                </motion.div>
-
-                <p className="mt-3 text-xs text-neutral-300">
-                  *Puedes reemplazar el mockup por screenshots reales.
-                </p>
-              </div>
-            </div>
+                    <CardContent className="space-y-3">
+                      <ul className="space-y-2 text-sm text-neutral-200">
+                        {e.bullets.map((b) => (
+                          <li key={b} className="flex items-start gap-2">
+                            <span className="mt-[7px] h-1.5 w-1.5 rounded-full bg-white/40" />
+                            <span>{b}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                </SpotlightCard>
+              </motion.div>
+            ))}
           </div>
         </section>
 
-        {/* ... (Projects / Experience / About / Contact / Footer ya lo tienes debajo, no cambia) ... */}
+        <Separator className="bg-white/10" />
+
+        {/* ABOUT (CV MERGE) */}
+        <section id="about" className="py-14">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+                Sobre mí
+              </h2>
+              <p className="mt-2 text-neutral-200">
+                Educación, liderazgo y skills (CV integrado).
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3">
+            {/* EDUCATION */}
+            <SpotlightCard>
+              <Card className="h-full border-0 bg-transparent">
+                <CardHeader>
+                  <CardTitle className="text-base">Educación</CardTitle>
+                  <CardDescription className="text-neutral-200">
+                    Formación y coursework.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {education.map((ed) => (
+                    <div
+                      key={`${ed.school}-${ed.program}`}
+                      className="rounded-2xl border border-white/15 bg-white/8 p-4"
+                    >
+                      <div className="text-sm font-medium text-white">
+                        {ed.school}
+                      </div>
+                      {ed.location ? (
+                        <div className="text-xs text-neutral-300">
+                          {ed.location}
+                        </div>
+                      ) : null}
+                      <div className="mt-2 text-sm text-neutral-200">
+                        {ed.program}
+                      </div>
+                      {ed.extra ? (
+                        <div className="mt-2 text-xs text-neutral-300">
+                          {ed.extra}
+                        </div>
+                      ) : null}
+                      {ed.coursework ? (
+                        <div className="mt-2 text-xs text-neutral-300">
+                          {ed.coursework}
+                        </div>
+                      ) : null}
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </SpotlightCard>
+
+            {/* LEADERSHIP */}
+            <SpotlightCard>
+              <Card className="h-full border-0 bg-transparent">
+                <CardHeader>
+                  <CardTitle className="text-base">Liderazgo</CardTitle>
+                  <CardDescription className="text-neutral-200">
+                    Impacto fuera del trabajo.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {leadership.map((l) => (
+                    <div
+                      key={`${l.org}-${l.role}`}
+                      className="rounded-2xl border border-white/15 bg-white/8 p-4"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="text-sm font-medium text-white">
+                          {l.org}
+                        </div>
+                        <div className="text-xs text-neutral-300">{l.date}</div>
+                      </div>
+                      <div className="text-xs text-neutral-300">
+                        {l.role}
+                        {l.location ? ` • ${l.location}` : ""}
+                      </div>
+
+                      <ul className="mt-3 space-y-2 text-sm text-neutral-200">
+                        {l.bullets.map((b) => (
+                          <li key={b} className="flex items-start gap-2">
+                            <span className="mt-[7px] h-1.5 w-1.5 rounded-full bg-white/40" />
+                            <span>{b}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </SpotlightCard>
+
+            {/* SKILLS */}
+            <SpotlightCard>
+              <Card className="h-full border-0 bg-transparent">
+                <CardHeader>
+                  <CardTitle className="text-base">Skills</CardTitle>
+                  <CardDescription className="text-neutral-200">
+                    Stack + idiomas + intereses.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {(
+                    [
+                      ["Languages", skills.languages],
+                      ["Frontend", skills.frontend],
+                      ["Backend", skills.backend],
+                      ["Databases", skills.databases],
+                      ["Tools", skills.tools],
+                      ["Spoken", skills.spoken],
+                    ] as const
+                  ).map(([label, items]) => (
+                    <div key={label}>
+                      <div className="text-xs font-medium text-neutral-200">
+                        {label}
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {items.map((t) => (
+                          <span
+                            key={t}
+                            className="rounded-full border border-white/15 bg-white/8 px-3 py-1 text-xs text-neutral-200"
+                          >
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+
+                  <div>
+                    <div className="text-xs font-medium text-neutral-200">
+                      Interests
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {skills.interests.map((t) => (
+                        <span
+                          key={t}
+                          className="rounded-full border border-white/15 bg-white/8 px-3 py-1 text-xs text-neutral-200"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </SpotlightCard>
+          </div>
+        </section>
+
+        <Separator className="bg-white/10" />
+
+        {/* CONTACT */}
+        <section id="contact" className="py-14">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+                Contacto
+              </h2>
+              <p className="mt-2 text-neutral-200">Links directos + CV.</p>
+            </div>
+          </div>
+
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Button asChild className="rounded-2xl">
+              <a
+                href={`mailto:${PROFILE.email}`}
+                className="inline-flex items-center gap-2"
+              >
+                <Mail className="h-4 w-4" /> {PROFILE.email}
+              </a>
+            </Button>
+
+            <Button
+              type="button"
+              variant="secondary"
+              className="rounded-2xl bg-white/10 text-white hover:bg-white/15"
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(PROFILE.email);
+                } catch {
+                  window.prompt("Copy email:", PROFILE.email);
+                }
+              }}
+            >
+              <Copy className="mr-2 h-4 w-4" /> Copiar email
+            </Button>
+
+            <Button
+              asChild
+              variant="secondary"
+              className="rounded-2xl bg-white/10 text-white hover:bg-white/15"
+            >
+              <a
+                href={PROFILE.github}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2"
+              >
+                <Github className="h-4 w-4" /> GitHub
+              </a>
+            </Button>
+
+            <Button
+              asChild
+              variant="secondary"
+              className="rounded-2xl bg-white/10 text-white hover:bg-white/15"
+            >
+              <a
+                href={PROFILE.linkedin}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2"
+              >
+                <Linkedin className="h-4 w-4" /> LinkedIn
+              </a>
+            </Button>
+
+            {PROFILE.resumeHref ? (
+              <Button
+                asChild
+                variant="secondary"
+                className="rounded-2xl bg-white/10 text-white hover:bg-white/15"
+              >
+                <a
+                  href={PROFILE.resumeHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2"
+                >
+                  Descargar CV <ArrowUpRight className="h-4 w-4" />
+                </a>
+              </Button>
+            ) : null}
+          </div>
+        </section>
+
+        <div className="h-10" />
       </main>
     </div>
   );
