@@ -9,7 +9,7 @@ import {
   type MouseEvent,
   type ReactNode,
 } from "react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useSpring } from "framer-motion";
 import {
   ArrowUpRight,
   Github,
@@ -136,10 +136,44 @@ const tech = [
 ];
 
 type Action =
-  | { id: string; title: string; subtitle?: string; kind: "section"; href: string; icon?: ReactNode }
-  | { id: string; title: string; subtitle?: string; kind: "external"; href: string; icon?: ReactNode }
+  | {
+      id: string;
+      title: string;
+      subtitle?: string;
+      kind: "section";
+      href: string;
+      icon?: ReactNode;
+    }
+  | {
+      id: string;
+      title: string;
+      subtitle?: string;
+      kind: "external";
+      href: string;
+      icon?: ReactNode;
+    }
   | { id: string; title: string; subtitle?: string; kind: "mailto"; icon?: ReactNode }
-  | { id: string; title: string; subtitle?: string; kind: "copyEmail"; icon?: ReactNode };
+  | {
+      id: string;
+      title: string;
+      subtitle?: string;
+      kind: "copyEmail";
+      icon?: ReactNode;
+    };
+
+/** Deterministic PRNG (evita hydration mismatch) */
+function mulberry32(seed: number) {
+  return function () {
+    let t = (seed += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function round(n: number, d = 4) {
+  const k = 10 ** d;
+  return Math.round(n * k) / k;
+}
 
 function SpotlightCard({ children }: { children: ReactNode }) {
   return (
@@ -156,31 +190,29 @@ function SpotlightCard({ children }: { children: ReactNode }) {
 }
 
 function DynamicBg() {
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 22 }, (_, i) => ({
-        id: i,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        size: 1 + Math.random() * 2.5,
-        dur: 6 + Math.random() * 10,
-        delay: Math.random() * 3,
-        opacity: 0.15 + Math.random() * 0.35,
-      })),
-    []
-  );
+  const particles = useMemo(() => {
+    const rand = mulberry32(1337);
+    return Array.from({ length: 22 }, (_, i) => ({
+      id: i,
+      x: round(rand() * 100, 4),
+      y: round(rand() * 100, 4),
+      size: round(1 + rand() * 2.5, 3),
+      dur: round(6 + rand() * 10, 3),
+      delay: round(rand() * 3, 3),
+      opacity: round(0.15 + rand() * 0.35, 3),
+    }));
+  }, []);
 
-  const meteors = useMemo(
-    () =>
-      Array.from({ length: 6 }, (_, i) => ({
-        id: i,
-        x: 10 + Math.random() * 80,
-        y: Math.random() * 55,
-        dur: 2.6 + Math.random() * 2.8,
-        delay: Math.random() * 2.5,
-      })),
-    []
-  );
+  const meteors = useMemo(() => {
+    const rand = mulberry32(4242);
+    return Array.from({ length: 6 }, (_, i) => ({
+      id: i,
+      x: round(10 + rand() * 80, 4),
+      y: round(rand() * 55, 4),
+      dur: round(2.6 + rand() * 2.8, 3),
+      delay: round(rand() * 2.5, 3),
+    }));
+  }, []);
 
   return (
     <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
@@ -228,7 +260,7 @@ function DynamicBg() {
           }}
           animate={{
             y: [0, -18, 0],
-            opacity: [p.opacity, p.opacity + 0.35, p.opacity],
+            opacity: [p.opacity, Math.min(p.opacity + 0.35, 1), p.opacity],
           }}
           transition={{
             duration: p.dur,
@@ -397,7 +429,13 @@ function CommandPaletteModal({
                     </div>
 
                     <div className="text-xs text-neutral-300">
-                      {a.kind === "section" ? "Go" : a.kind === "external" ? "Open" : a.kind === "mailto" ? "Mail" : "Copy"}
+                      {a.kind === "section"
+                        ? "Go"
+                        : a.kind === "external"
+                        ? "Open"
+                        : a.kind === "mailto"
+                        ? "Mail"
+                        : "Copy"}
                     </div>
                   </button>
                 ))}
@@ -418,17 +456,86 @@ function CommandPaletteModal({
 export default function Landing() {
   const [paletteOpen, setPaletteOpen] = useState(false);
 
+  // ✅ Scroll progress bar
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 20,
+    mass: 0.25,
+  });
+
   const actions: Action[] = useMemo(
     () => [
-      { id: "go-featured", title: "Featured Project", subtitle: "Mini case study", kind: "section", href: "#featured", icon: <Trophy className="h-4 w-4" /> },
-      { id: "go-projects", title: "Projects", subtitle: "Sección de proyectos", kind: "section", href: "#projects", icon: <Sparkles className="h-4 w-4" /> },
-      { id: "go-exp", title: "Experience", subtitle: "Trabajo y roles", kind: "section", href: "#experience", icon: <Briefcase className="h-4 w-4" /> },
-      { id: "go-about", title: "About", subtitle: "Educación y skills", kind: "section", href: "#about", icon: <GraduationCap className="h-4 w-4" /> },
-      { id: "go-contact", title: "Contact", subtitle: "Email y links", kind: "section", href: "#contact", icon: <Mail className="h-4 w-4" /> },
-      { id: "open-github", title: "Open GitHub", subtitle: PROFILE.github, kind: "external", href: PROFILE.github, icon: <Github className="h-4 w-4" /> },
-      { id: "open-linkedin", title: "Open LinkedIn", subtitle: PROFILE.linkedin, kind: "external", href: PROFILE.linkedin, icon: <Linkedin className="h-4 w-4" /> },
-      { id: "mail", title: "Send email", subtitle: PROFILE.email, kind: "mailto", icon: <Mail className="h-4 w-4" /> },
-      { id: "copy-email", title: "Copy email", subtitle: PROFILE.email, kind: "copyEmail", icon: <Copy className="h-4 w-4" /> },
+      {
+        id: "go-featured",
+        title: "Featured Project",
+        subtitle: "Mini case study",
+        kind: "section",
+        href: "#featured",
+        icon: <Trophy className="h-4 w-4" />,
+      },
+      {
+        id: "go-projects",
+        title: "Projects",
+        subtitle: "Sección de proyectos",
+        kind: "section",
+        href: "#projects",
+        icon: <Sparkles className="h-4 w-4" />,
+      },
+      {
+        id: "go-exp",
+        title: "Experience",
+        subtitle: "Trabajo y roles",
+        kind: "section",
+        href: "#experience",
+        icon: <Briefcase className="h-4 w-4" />,
+      },
+      {
+        id: "go-about",
+        title: "About",
+        subtitle: "Educación y skills",
+        kind: "section",
+        href: "#about",
+        icon: <GraduationCap className="h-4 w-4" />,
+      },
+      {
+        id: "go-contact",
+        title: "Contact",
+        subtitle: "Email y links",
+        kind: "section",
+        href: "#contact",
+        icon: <Mail className="h-4 w-4" />,
+      },
+      {
+        id: "open-github",
+        title: "Open GitHub",
+        subtitle: PROFILE.github,
+        kind: "external",
+        href: PROFILE.github,
+        icon: <Github className="h-4 w-4" />,
+      },
+      {
+        id: "open-linkedin",
+        title: "Open LinkedIn",
+        subtitle: PROFILE.linkedin,
+        kind: "external",
+        href: PROFILE.linkedin,
+        icon: <Linkedin className="h-4 w-4" />,
+      },
+      {
+        id: "mail",
+        title: "Send email",
+        subtitle: PROFILE.email,
+        kind: "mailto",
+        icon: <Mail className="h-4 w-4" />,
+      },
+      {
+        id: "copy-email",
+        title: "Copy email",
+        subtitle: PROFILE.email,
+        kind: "copyEmail",
+        icon: <Copy className="h-4 w-4" />,
+      },
     ],
     []
   );
@@ -437,13 +544,21 @@ export default function Landing() {
     try {
       if (a.kind === "section") {
         const el = document.querySelector(a.href);
-        if (el) (el as HTMLElement).scrollIntoView({ behavior: "smooth", block: "start" });
+        if (el)
+          (el as HTMLElement).scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
       } else if (a.kind === "external") {
         window.open(a.href, "_blank", "noopener,noreferrer");
       } else if (a.kind === "mailto") {
         window.location.href = `mailto:${PROFILE.email}`;
       } else if (a.kind === "copyEmail") {
-        await navigator.clipboard.writeText(PROFILE.email);
+        try {
+          await navigator.clipboard.writeText(PROFILE.email);
+        } catch {
+          window.prompt("Copy email:", PROFILE.email);
+        }
       }
     } finally {
       setPaletteOpen(false);
@@ -464,33 +579,52 @@ export default function Landing() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // ✅ FIX #1: throttle mousemove with requestAnimationFrame
+  const rafRef = useRef<number | null>(null);
+
   const onMove = (e: MouseEvent<HTMLDivElement>) => {
-    // 1) Cursor glow del fondo
+    if (rafRef.current) return;
+
+    const clientX = e.clientX;
+    const clientY = e.clientY;
     const host = e.currentTarget as HTMLElement;
-    const hostRect = host.getBoundingClientRect();
-    host.style.setProperty("--mx", `${e.clientX - hostRect.left}px`);
-    host.style.setProperty("--my", `${e.clientY - hostRect.top}px`);
 
-    const target = e.target as HTMLElement;
+    rafRef.current = window.requestAnimationFrame(() => {
+      rafRef.current = null;
 
-    // 2) Parallax del Featured
-    const parallax = target.closest("[data-parallax]") as HTMLElement | null;
-    if (parallax) {
-      const r = parallax.getBoundingClientRect();
-      const nx = (e.clientX - r.left) / r.width - 0.5;
-      const ny = (e.clientY - r.top) / r.height - 0.5;
-      parallax.style.setProperty("--px", `${nx * 28}px`);
-      parallax.style.setProperty("--py", `${ny * 28}px`);
-    }
+      // cursor glow del fondo
+      const hostRect = host.getBoundingClientRect();
+      host.style.setProperty("--mx", `${clientX - hostRect.left}px`);
+      host.style.setProperty("--my", `${clientY - hostRect.top}px`);
 
-    // 3) Spotlight de cards
-    const card = target.closest(".group") as HTMLElement | null;
-    if (!card) return;
+      // elemento real bajo el cursor
+      const el = document.elementFromPoint(clientX, clientY) as HTMLElement | null;
 
-    const rect = card.getBoundingClientRect();
-    card.style.setProperty("--x", `${e.clientX - rect.left}px`);
-    card.style.setProperty("--y", `${e.clientY - rect.top}px`);
+      // spotlight cards
+      const card = el?.closest(".group") as HTMLElement | null;
+      if (card) {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty("--x", `${clientX - rect.left}px`);
+        card.style.setProperty("--y", `${clientY - rect.top}px`);
+      }
+
+      // parallax featured (suave)
+      const parallax = el?.closest("[data-parallax]") as HTMLElement | null;
+      if (parallax) {
+        const r = parallax.getBoundingClientRect();
+        const nx = (clientX - r.left) / r.width - 0.5;
+        const ny = (clientY - r.top) / r.height - 0.5;
+        parallax.style.setProperty("--px", `${nx * 18}px`);
+        parallax.style.setProperty("--py", `${ny * 18}px`);
+      }
+    });
   };
+
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
   return (
     <div
@@ -504,6 +638,15 @@ export default function Landing() {
       }
     >
       <DynamicBg />
+
+      {/* ✅ Scroll progress bar */}
+      <div className="fixed left-0 right-0 top-0 z-[80] h-[3px] bg-white/5">
+        <motion.div
+          className="h-full bg-gradient-to-r from-cyan-300 via-fuchsia-300 to-emerald-300"
+          style={{ scaleX, transformOrigin: "0% 50%" }}
+        />
+        <div className="absolute inset-0 blur-md opacity-60 bg-gradient-to-r from-cyan-300/30 via-fuchsia-300/30 to-emerald-300/30" />
+      </div>
 
       <CommandPaletteModal
         open={paletteOpen}
@@ -554,6 +697,9 @@ export default function Landing() {
           </div>
         </div>
       </header>
+
+      {/* ⬇️ El resto del archivo queda igual que tu versión actual */}
+      {/* (Para no romperte nada, no lo recorto: lo dejas tal cual) */}
 
       <main className="mx-auto max-w-6xl px-5">
         {/* HERO */}
@@ -881,7 +1027,7 @@ export default function Landing() {
 
         <Separator className="bg-white/10" />
 
-        {/* ABOUT / EDUCATION */}
+        {/* ABOUT */}
         <section id="about" className="py-14">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <div className="md:col-span-1">
