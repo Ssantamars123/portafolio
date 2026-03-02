@@ -778,18 +778,32 @@ export default function Landing() {
             </Badge>
           </motion.div>
 
-          <motion.h1
+          <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.05 }}
-            className="mt-6 text-4xl font-semibold tracking-tight md:text-6xl"
+            className="mt-6 flex flex-col items-center gap-4 md:flex-row md:flex-row-reverse md:items-center md:gap-6"
           >
-            {PROFILE.name} —{" "}
-            <span className="bg-gradient-to-r from-fuchsia-300 via-indigo-200 to-cyan-200 bg-clip-text text-transparent">
-              construyo productos
-            </span>{" "}
-            con UI premium y performance.
-          </motion.h1>
+            <div className="relative h-96 w-96 md:h-[30rem] md:w-[40rem] rounded-2xl p-1 bg-gradient-to-tr from-fuchsia-800/10 via-indigo-700/8 to-cyan-400/8 shadow-2xl">
+              <div className="relative h-full w-full overflow-hidden rounded-xl bg-neutral-900">
+                <Image
+                  src="/projects/fotosamuel.png"
+                  alt="Samuel Santamaria"
+                  fill
+                  priority
+                  className="object-cover object-[80%_30%]"
+                />
+              </div>
+            </div>
+
+            <h1 className="text-3xl font-semibold tracking-tight md:text-6xl text-center md:text-left">
+              {PROFILE.name} —{" "}
+              <span className="bg-gradient-to-r from-fuchsia-300 via-indigo-200 to-cyan-200 bg-clip-text text-transparent">
+                Diseño y construyo productos digitales
+              </span>
+              {" "}centrados en la experiencia y el rendimiento.
+            </h1>
+          </motion.div>
 
           <motion.p
             initial={{ opacity: 0, y: 14 }}
