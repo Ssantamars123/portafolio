@@ -16,12 +16,12 @@ import {
   Briefcase,
   Command,
   Copy,
-  Github,
+  GitBranch,
   GraduationCap,
-  Linkedin,
+  Share2,
   Mail,
   Sparkles,
-  Trophy,
+  Globe,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -34,6 +34,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useLanguage } from "@/app/LanguageContext";
+import { translations, type Language } from "@/app/translations";
 
 /* ----------------------------- DATA / CONSTANTS ---------------------------- */
 
@@ -47,7 +49,6 @@ const PROFILE = {
   email: "ssantamars@eafit.edu.co",
   github: "https://github.com/Ssantamars123",
   linkedin: "https://www.linkedin.com/in/samuel-santamaria-044a0a290/?isSelfProfile=true",
-  // ✅ tu archivo ya está en: public/projects/SamuelSantamaria-Resume-Updated-v2.pdf
   resumeHref: "/projects/SamuelSantamaria-Resume-Updated-v2.pdf",
 };
 
@@ -55,45 +56,42 @@ type Project = {
   title: string;
   desc: string;
   tags: string[];
-  href?: string; // demo
+  href?: string;
   github: string;
   impact: string[];
   logo?: string;
 };
 
-const projects: Project[] = [
-  {
-    title: "NexClass — Full-Stack Django Web App",
-    desc: "Plataforma educativa tipo marketplace: usuarios/roles, búsqueda, favoritos, mensajería, blog de profesores y sistema de reviews/ranking (arquitectura multi-app).",
-    tags: ["Django", "Python", "HTML/CSS", "JavaScript"],
-    href: "", // no demo por ahora
-    github: NEXCLASS_REPO,
-    logo: "/projects/nexclass.png",
-    impact: [
-      "Arquitectura modular multi-app (users, search, favorites, reviews, teacher_blog)",
-      "Features: búsqueda + favoritos + mensajería interna + inscripciones",
-      "Sistema de reviews/ranking + extensible",
-    ],
-  },
-  {
-    title: "Zoho CRM ↔ Siigo ERP Sync (Python + APIs)",
-    desc: "Integración y automatización: sincronización de datos clave y flujos de outreach basados en triggers.",
-    tags: ["Python", "APIs", "Automation"],
-    href: "",
-    github: "#",
-    impact: ["1,500+ registros", "5 procesos automatizados", "Workflows de emails"],
-  },
-  {
-    title: "Portfolio (Next.js) — UI Premium",
-    desc: "Este sitio: glass + neon, motion, componentes reutilizables, performance y SEO.",
-    tags: ["Next.js", "TypeScript", "Tailwind", "shadcn/ui"],
-    href: "",
-    github: "#",
-    impact: ["UI system", "Motion", "Rápido + SEO"],
-  },
-];
-
-// Featured project removed per user request. Related data and constants deleted.
+function getProjects(lang: Language): Project[] {
+  const t = translations[lang];
+  return [
+    {
+      title: t.project1Title,
+      desc: t.project1Desc,
+      tags: ["Django", "Python", "HTML/CSS", "JavaScript"],
+      href: "",
+      github: NEXCLASS_REPO,
+      logo: "/projects/nexclass.png",
+      impact: [t.project1Impact1, t.project1Impact2, t.project1Impact3],
+    },
+    {
+      title: t.project2Title,
+      desc: t.project2Desc,
+      tags: ["Python", "APIs", "Automation"],
+      href: "",
+      github: "#",
+      impact: [t.project2Impact1, t.project2Impact2, t.project2Impact3],
+    },
+    {
+      title: t.project3Title,
+      desc: t.project3Desc,
+      tags: ["Next.js", "TypeScript", "Tailwind", "shadcn/ui"],
+      href: "",
+      github: "#",
+      impact: [t.project3Impact1, t.project3Impact2, t.project3Impact3],
+    },
+  ];
+}
 
 type ExperienceItem = {
   company: string;
@@ -103,33 +101,31 @@ type ExperienceItem = {
   bullets: string[];
 };
 
-const experience: ExperienceItem[] = [
-  {
-    company: "Dekotendencias S.A.S",
-    role: "Summer Intern",
-    date: "Feb 2025 – Jul 2025",
-    location: "Medellín, Colombia",
-    bullets: [
-      "Implementé Zoho CRM para fortalecer gestión de clientes y control comercial.",
-      "Integré Zoho CRM con Siigo ERP usando Python + APIs para sincronizar datos clave.",
-      "Migré y validé 1,500+ registros de clientes, mejorando visibilidad y calidad de datos.",
-      "Automaticé 5 procesos core, reduciendo tareas manuales y mejorando eficiencia.",
-      "Automaticé outreach con email workflows basados en triggers.",
-    ],
-  },
-  {
-    company: "Genius Sports",
-    role: "Sports Data Operator",
-    date: "May 2025 – Present",
-    location: "Medellín, Colombia",
-    bullets: [
-      "Capturo y valido tracking y play-by-play en vivo (basketball/football).",
-      "Verifico datos de jugadores/equipos para asegurar feeds y reportes confiables.",
-      "Monitoreo eventos end-to-end, detecto anomalías y escalo bajo presión.",
-      "Mantengo alta precisión y detalle en escenarios de tiempo real.",
-    ],
-  },
-];
+function getExperience(lang: Language): ExperienceItem[] {
+  const t = translations[lang];
+  return [
+    {
+      company: "Dekotendencias S.A.S",
+      role: "Summer Intern",
+      date: "Feb 2025 – Jul 2025",
+      location: "Medellín, Colombia",
+      bullets: [
+        t.exp1Bullet1,
+        t.exp1Bullet2,
+        t.exp1Bullet3,
+        t.exp1Bullet4,
+        t.exp1Bullet5,
+      ],
+    },
+    {
+      company: "Genius Sports",
+      role: "Sports Data Operator",
+      date: "May 2025 – Present",
+      location: "Medellín, Colombia",
+      bullets: [t.exp2Bullet1, t.exp2Bullet2, t.exp2Bullet3, t.exp2Bullet4],
+    },
+  ];
+}
 
 type EducationItem = {
   school: string;
@@ -139,25 +135,28 @@ type EducationItem = {
   coursework?: string;
 };
 
-const education: EducationItem[] = [
-  {
-    school: "EAFIT University",
-    location: "Medellín, Colombia",
-    program: "BSc in Computer Science (Expected Jun 2027)",
-    extra: "GPA: 4.1/5.0",
-    coursework: "Relevant coursework: C, C++, Java, JavaScript, Python; Unix/Linux environments",
-  },
-  {
-    school: "Academie Ste-Cécile International School",
-    location: "Ontario, Canada",
-    program: "Study Abroad – Intensive English Program (2017)",
-  },
-  {
-    school: "Winston-Salem State University",
-    location: "Medellín, Colombia",
-    program: "Advanced English Language Program (2017–2019)",
-  },
-];
+function getEducation(lang: Language): EducationItem[] {
+  const t = translations[lang];
+  return [
+    {
+      school: "EAFIT University",
+      location: "Medellín, Colombia",
+      program: "BSc in Computer Science (Expected Jun 2027)",
+      extra: `${t.gpa}: 4.1/5.0`,
+      coursework: `${t.coursework}: C, C++, Java, JavaScript, Python; Unix/Linux environments`,
+    },
+    {
+      school: "Academie Ste-Cécile International School",
+      location: "Ontario, Canada",
+      program: `${t.studyAbroad} – Intensive English Program (2017)`,
+    },
+    {
+      school: "Winston-Salem State University",
+      location: "Medellín, Colombia",
+      program: `Advanced English Language Program (2017–2019)`,
+    },
+  ];
+}
 
 type LeadershipItem = {
   org: string;
@@ -167,19 +166,22 @@ type LeadershipItem = {
   bullets: string[];
 };
 
-const leadership: LeadershipItem[] = [
-  {
-    org: "Aguapanelazos ONG",
-    role: "Volunteer",
-    date: "Dec 2025",
-    location: "Medellín, Colombia",
-    bullets: [
-      "Participé en jornadas de apoyo comunitario entregando alimentos y regalos a familias de bajos recursos.",
-      "Coordiné rutas y logística con voluntarios para cubrir varios barrios de manera eficiente.",
-      "Impulsé conciencia social mediante interacción directa con comunidades vulnerables.",
-    ],
-  },
-];
+function getLeadership(lang: Language): LeadershipItem[] {
+  const t = translations[lang];
+  return [
+    {
+      org: "Aguapanelazos ONG",
+      role: t.volunteer,
+      date: "Dec 2025",
+      location: "Medellín, Colombia",
+      bullets: [
+        t.leadership1Bullet1,
+        t.leadership1Bullet2,
+        t.leadership1Bullet3,
+      ],
+    },
+  ];
+}
 
 const tech = [
   "Next.js",
@@ -252,7 +254,7 @@ function round(n: number, d = 4) {
 
 /* ------------------------------- UI COMPONENTS ------------------------------ */
 
-function SpotlightCard({ children }: { children: ReactNode }) {
+function SpotlightCard({ children }: { readonly children: ReactNode }) {
   return (
     <div className="group relative rounded-2xl p-[1px]">
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-fuchsia-500/45 via-cyan-400/40 to-emerald-400/40 opacity-0 blur-sm transition-opacity duration-300 group-hover:opacity-100" />
@@ -378,11 +380,18 @@ function CommandPaletteModal({
   onClose,
   actions,
   runAction,
+  commands,
 }: {
-  open: boolean;
-  onClose: () => void;
-  actions: Action[];
-  runAction: (a: Action) => void;
+  readonly open: boolean;
+  readonly onClose: () => void;
+  readonly actions: Action[];
+  readonly runAction: (a: Action) => void;
+  readonly commands: {
+    readonly go: string;
+    readonly open: string;
+    readonly mail: string;
+    readonly copy: string;
+  };
 }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [query, setQuery] = useState("");
@@ -427,23 +436,21 @@ function CommandPaletteModal({
       }
     };
 
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    globalThis.addEventListener("keydown", onKey);
+    return () => globalThis.removeEventListener("keydown", onKey);
   }, [open, filtered, active, onClose, runAction]);
 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[60]">
+    <dialog
+      open={open}
+      className="fixed inset-0 z-[60] flex items-start justify-center p-4 pt-20 backdrop:bg-black/55 backdrop:backdrop-blur-sm"
+      onClose={onClose}
+    >
       <div
-        className="absolute inset-0 bg-black/55 backdrop-blur-sm"
-        onMouseDown={onClose}
-      />
-      <div className="absolute inset-0 flex items-start justify-center p-4 pt-20">
-        <div
-          className="w-full max-w-2xl overflow-hidden rounded-2xl border border-white/15 bg-[#0B1020]/85 backdrop-blur-xl shadow-2xl"
-          onMouseDown={(e) => e.stopPropagation()}
-        >
+        className="w-full max-w-2xl overflow-hidden rounded-2xl border border-white/15 bg-[#0B1020]/85 backdrop-blur-xl shadow-2xl"
+      >
           <div className="flex items-center gap-2 border-b border-white/10 bg-white/5 px-4 py-3">
             <Command className="h-4 w-4 text-neutral-200" />
             <input
@@ -491,13 +498,20 @@ function CommandPaletteModal({
                     </div>
 
                     <div className="text-xs text-neutral-300">
-                      {a.kind === "section"
-                        ? "Go"
-                        : a.kind === "external"
-                        ? "Open"
-                        : a.kind === "mailto"
-                        ? "Mail"
-                        : "Copy"}
+                      {(() => {
+                        switch (a.kind) {
+                          case "section":
+                            return commands.go;
+                          case "external":
+                            return commands.open;
+                          case "mailto":
+                            return commands.mail;
+                          case "copyEmail":
+                            return commands.copy;
+                          default:
+                            return "";
+                        }
+                      })()}
                     </div>
                   </button>
                 ))}
@@ -510,8 +524,7 @@ function CommandPaletteModal({
             <span className="hidden sm:inline">Navega rápido como VSCode ✨</span>
           </div>
         </div>
-      </div>
-    </div>
+    </dialog>
   );
 }
 
@@ -519,6 +532,8 @@ function CommandPaletteModal({
 
 export default function Landing() {
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const { lang, setLang } = useLanguage();
+  const t = translations[lang];
 
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -527,43 +542,48 @@ export default function Landing() {
     mass: 0.25,
   });
 
+  const projects = useMemo(() => getProjects(lang), [lang]);
+  const experience = useMemo(() => getExperience(lang), [lang]);
+  const education = useMemo(() => getEducation(lang), [lang]);
+  const leadership = useMemo(() => getLeadership(lang), [lang]);
+
   const actions: Action[] = useMemo(
     () => [
       {
         id: "go-projects",
-        title: "Projects",
-        subtitle: "Sección de proyectos",
+        title: t.goProjects,
+        subtitle: t.goProjectsSubtitle,
         kind: "section",
         href: "#projects",
         icon: <Sparkles className="h-4 w-4" />,
       },
       {
         id: "go-exp",
-        title: "Experience",
-        subtitle: "Trabajo y roles",
+        title: t.goExp,
+        subtitle: t.goExpSubtitle,
         kind: "section",
         href: "#experience",
         icon: <Briefcase className="h-4 w-4" />,
       },
       {
         id: "go-about",
-        title: "About",
-        subtitle: "Educación, skills, liderazgo",
+        title: t.goAbout,
+        subtitle: t.goAboutSubtitle,
         kind: "section",
         href: "#about",
         icon: <GraduationCap className="h-4 w-4" />,
       },
       {
         id: "go-contact",
-        title: "Contact",
-        subtitle: "Email y links",
+        title: t.goContact,
+        subtitle: t.goContactSubtitle,
         kind: "section",
         href: "#contact",
         icon: <Mail className="h-4 w-4" />,
       },
       {
         id: "open-resume",
-        title: "Open Resume (PDF)",
+        title: t.openResume,
         subtitle: PROFILE.resumeHref,
         kind: "external",
         href: PROFILE.resumeHref,
@@ -571,44 +591,44 @@ export default function Landing() {
       },
       {
         id: "open-nexclass",
-        title: "Open NexClass repo",
+        title: t.openNexClass,
         subtitle: NEXCLASS_REPO,
         kind: "external",
         href: NEXCLASS_REPO,
-        icon: <Github className="h-4 w-4" />,
+        icon: <GitBranch className="h-4 w-4" />,
       },
       {
         id: "open-github",
-        title: "Open GitHub",
+        title: t.openGithub,
         subtitle: PROFILE.github,
         kind: "external",
         href: PROFILE.github,
-        icon: <Github className="h-4 w-4" />,
+        icon: <GitBranch className="h-4 w-4" />,
       },
       {
         id: "open-linkedin",
-        title: "Open LinkedIn",
+        title: t.openLinkedin,
         subtitle: PROFILE.linkedin,
         kind: "external",
         href: PROFILE.linkedin,
-        icon: <Linkedin className="h-4 w-4" />,
+        icon: <Share2 className="h-4 w-4" />,
       },
       {
         id: "mail",
-        title: "Send email",
+        title: t.sendEmail,
         subtitle: PROFILE.email,
         kind: "mailto",
         icon: <Mail className="h-4 w-4" />,
       },
       {
         id: "copy-email",
-        title: "Copy email",
+        title: t.copy,
         subtitle: PROFILE.email,
         kind: "copyEmail",
         icon: <Copy className="h-4 w-4" />,
       },
     ],
-    []
+    [lang, t]
   );
 
   const runAction = async (a: Action) => {
@@ -623,12 +643,12 @@ export default function Landing() {
       } else if (a.kind === "external") {
         window.open(a.href, "_blank", "noopener,noreferrer");
       } else if (a.kind === "mailto") {
-        window.location.href = `mailto:${PROFILE.email}`;
+        globalThis.location.href = `mailto:${PROFILE.email}`;
       } else if (a.kind === "copyEmail") {
         try {
           await navigator.clipboard.writeText(PROFILE.email);
         } catch {
-          window.prompt("Copy email:", PROFILE.email);
+          globalThis.prompt("Copy email:", PROFILE.email);
         }
       }
     } finally {
@@ -646,8 +666,8 @@ export default function Landing() {
       if (e.key === "Escape") setPaletteOpen(false);
     };
 
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    globalThis.addEventListener("keydown", onKey);
+    return () => globalThis.removeEventListener("keydown", onKey);
   }, []);
 
   const rafRef = useRef<number | null>(null);
@@ -659,7 +679,7 @@ export default function Landing() {
     const clientY = e.clientY;
     const host = e.currentTarget as HTMLElement;
 
-    rafRef.current = window.requestAnimationFrame(() => {
+    rafRef.current = globalThis.requestAnimationFrame(() => {
       rafRef.current = null;
 
       const hostRect = host.getBoundingClientRect();
@@ -694,7 +714,7 @@ export default function Landing() {
   }, []);
 
   return (
-    <div
+    <main
       className="relative min-h-screen text-neutral-50"
       onMouseMove={onMove}
       style={{ ["--mx" as any]: "50%", ["--my" as any]: "20%" } as CSSProperties}
@@ -714,6 +734,12 @@ export default function Landing() {
         onClose={() => setPaletteOpen(false)}
         actions={actions}
         runAction={runAction}
+        commands={{
+          go: lang === "es" ? "Ir" : "Go",
+          open: lang === "es" ? "Abrir" : "Open",
+          mail: lang === "es" ? "Correo" : "Mail",
+          copy: lang === "es" ? "Copiar" : "Copy",
+        }}
       />
 
       <header className="sticky top-0 z-30 border-b border-white/10 bg-[#0B1020]/55 backdrop-blur">
@@ -727,20 +753,32 @@ export default function Landing() {
 
           <nav className="hidden gap-6 text-sm text-neutral-200 md:flex">
             <a className="hover:text-white" href="#projects">
-              Proyectos
+              {t.projects}
             </a>
             <a className="hover:text-white" href="#experience">
-              Experiencia
+              {t.experience}
             </a>
             <a className="hover:text-white" href="#about">
-              Sobre mí
+              {t.about}
             </a>
             <a className="hover:text-white" href="#contact">
-              Contacto
+              {t.contact}
             </a>
           </nav>
 
           <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setLang(lang === "es" ? "en" : "es")}
+              className="rounded-full bg-white/10 text-white hover:bg-white/15"
+              title={lang === "es" ? "Switch to English" : "Cambiar a Español"}
+            >
+              <Globe className="mr-1 h-4 w-4" />
+              {lang === "es" ? "EN" : "ES"}
+            </Button>
+
             <Button
               type="button"
               variant="secondary"
@@ -753,7 +791,7 @@ export default function Landing() {
             </Button>
 
             <Button asChild size="sm" className="rounded-full">
-              <a href="#contact">Hablemos</a>
+              <a href="#contact">{t.letsTalk}</a>
             </Button>
           </div>
         </div>
@@ -799,9 +837,9 @@ export default function Landing() {
             <h1 className="text-3xl font-semibold tracking-tight md:text-6xl text-center md:text-left">
               {PROFILE.name} —{" "}
               <span className="bg-gradient-to-r from-fuchsia-300 via-indigo-200 to-cyan-200 bg-clip-text text-transparent">
-                Diseño y construyo productos digitales
+                {t.heroTitle}
               </span>
-              {" "}centrados en la experiencia y el rendimiento.
+              {" "}{t.heroSubtitle}
             </h1>
           </motion.div>
 
@@ -811,11 +849,9 @@ export default function Landing() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="mt-5 max-w-2xl text-base text-neutral-200 md:text-lg"
           >
-            Full-stack dev enfocado en UI, performance y features reales. Django/Node, React/Next/Angular, SQL/MongoDB,
-            Docker.
+            {t.heroDescription}
           </motion.p>
 
-          {/* ✅ SOLO CV (borrados los 2 botones del NexClass del HERO) */}
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
@@ -834,7 +870,7 @@ export default function Landing() {
                   rel="noreferrer"
                   className="inline-flex items-center gap-2"
                 >
-                  Descargar CV <ArrowUpRight className="h-4 w-4" />
+                  {t.downloadCV} <ArrowUpRight className="h-4 w-4" />
                 </a>
               </Button>
             ) : null}
@@ -870,10 +906,10 @@ export default function Landing() {
           <div className="flex items-end justify-between gap-4">
             <div>
               <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-                Proyectos
+                {t.projectsHeading}
               </h2>
               <p className="mt-2 text-neutral-200">
-                Selección corta para mostrar impacto y stack real.
+                {t.projectsSubheading}
               </p>
             </div>
           </div>
@@ -946,7 +982,7 @@ export default function Landing() {
                             rel="noreferrer"
                             className="inline-flex items-center gap-2"
                           >
-                            <Github className="h-4 w-4" /> GitHub
+                            <GitBranch className="h-4 w-4" /> GitHub
                           </a>
                         </Button>
 
@@ -978,10 +1014,10 @@ export default function Landing() {
           <div className="flex items-end justify-between gap-4">
             <div>
               <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-                Experiencia
+                {t.experienceHeading}
               </h2>
               <p className="mt-2 text-neutral-200">
-                Roles recientes y resultados medibles.
+                {t.experienceSubheading}
               </p>
             </div>
           </div>
@@ -1037,10 +1073,10 @@ export default function Landing() {
           <div className="flex items-end justify-between gap-4">
             <div>
               <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-                Sobre mí
+                {t.aboutHeading}
               </h2>
               <p className="mt-2 text-neutral-200">
-                Educación, liderazgo y skills (CV integrado).
+                {t.aboutSubheading}
               </p>
             </div>
           </div>
@@ -1050,9 +1086,9 @@ export default function Landing() {
             <SpotlightCard>
               <Card className="h-full border-0 bg-transparent">
                 <CardHeader>
-                  <CardTitle className="text-base">Educación</CardTitle>
+                  <CardTitle className="text-base">{t.education}</CardTitle>
                   <CardDescription className="text-neutral-200">
-                    Formación y coursework.
+                    {t.about}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -1092,9 +1128,9 @@ export default function Landing() {
             <SpotlightCard>
               <Card className="h-full border-0 bg-transparent">
                 <CardHeader>
-                  <CardTitle className="text-base">Liderazgo</CardTitle>
+                  <CardTitle className="text-base">{t.leadership}</CardTitle>
                   <CardDescription className="text-neutral-200">
-                    Impacto fuera del trabajo.
+                    {t.about}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -1134,18 +1170,18 @@ export default function Landing() {
                 <CardHeader>
                   <CardTitle className="text-base">Skills</CardTitle>
                   <CardDescription className="text-neutral-200">
-                    Stack + idiomas + intereses.
+                    {t.about}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {(
                     [
-                      ["Languages", skills.languages],
-                      ["Frontend", skills.frontend],
-                      ["Backend", skills.backend],
-                      ["Databases", skills.databases],
-                      ["Tools", skills.tools],
-                      ["Spoken", skills.spoken],
+                      [t.languages, skills.languages],
+                      [t.frontend, skills.frontend],
+                      [t.backend, skills.backend],
+                      [t.databases, skills.databases],
+                      [t.tools, skills.tools],
+                      [t.spoken, skills.spoken],
                     ] as const
                   ).map(([label, items]) => (
                     <div key={label}>
@@ -1167,7 +1203,7 @@ export default function Landing() {
 
                   <div>
                     <div className="text-xs font-medium text-neutral-200">
-                      Interests
+                      {t.interests}
                     </div>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {skills.interests.map((t) => (
@@ -1193,9 +1229,9 @@ export default function Landing() {
           <div className="flex items-end justify-between gap-4">
             <div>
               <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-                Contacto
+                {t.contactHeading}
               </h2>
-              <p className="mt-2 text-neutral-200">Links directos + CV.</p>
+              <p className="mt-2 text-neutral-200">{t.contactSubheading}</p>
             </div>
           </div>
 
@@ -1217,11 +1253,11 @@ export default function Landing() {
                 try {
                   await navigator.clipboard.writeText(PROFILE.email);
                 } catch {
-                  window.prompt("Copy email:", PROFILE.email);
+                  globalThis.prompt("Copy email:", PROFILE.email);
                 }
               }}
             >
-              <Copy className="mr-2 h-4 w-4" /> Copiar email
+              <Copy className="mr-2 h-4 w-4" /> {t.copy} {t.contact}
             </Button>
 
             <Button
@@ -1235,7 +1271,7 @@ export default function Landing() {
                 rel="noreferrer"
                 className="inline-flex items-center gap-2"
               >
-                <Github className="h-4 w-4" /> GitHub
+                <GitBranch className="h-4 w-4" /> GitHub
               </a>
             </Button>
 
@@ -1250,7 +1286,7 @@ export default function Landing() {
                 rel="noreferrer"
                 className="inline-flex items-center gap-2"
               >
-                <Linkedin className="h-4 w-4" /> LinkedIn
+                <Share2 className="h-4 w-4" /> LinkedIn
               </a>
             </Button>
 
@@ -1266,7 +1302,7 @@ export default function Landing() {
                   rel="noreferrer"
                   className="inline-flex items-center gap-2"
                 >
-                  Descargar CV <ArrowUpRight className="h-4 w-4" />
+                  {t.downloadCV} <ArrowUpRight className="h-4 w-4" />
                 </a>
               </Button>
             ) : null}
@@ -1275,6 +1311,6 @@ export default function Landing() {
 
         <div className="h-10" />
       </main>
-    </div>
+    </main>
   );
 }
